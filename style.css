@@ -113,3 +113,4 @@ button:disabled { opacity: .5; cursor: default; }
 .result { text-align: center; font-size: 1.4rem; font-weight: 700; margin: 0; }
 .result.win { color: var(--win); }
 .result.lose { color: var(--lose); }
+.match-info { text-align: center; color: var(--muted); font-size: .9rem; margin: 4px 0 0; }

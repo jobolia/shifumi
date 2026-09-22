@@ -8,6 +8,8 @@ Un petit jeu de pierre-feuille-ciseaux à jouer entre amis, **sans compte, sans 
 - 📱 **À deux sur le même téléphone** : chacun choisit à son tour, sans regarder.
 - 🤖 **Contre l'ordinateur**.
 
+Chaque match se joue en **2 manches gagnantes** : le premier à 2 victoires gagne, puis on peut lancer une revanche.
+
 ## Comment ça marche
 
 C'est un site statique (HTML, CSS, JavaScript, rien à compiler). Le mode en ligne utilise
@@ -15,7 +17,13 @@ C'est un site statique (HTML, CSS, JavaScript, rien à compiler). Le mode en lig
 public de PeerJS sert juste à les mettre en relation. Aucune donnée n'est stockée, à part ton pseudo
 dans ton navigateur.
 
-## Mettre le jeu en ligne (GitHub Pages)
+## Mettre le jeu en ligne (Vercel)
+
+1. Sur [vercel.com/new](https://vercel.com/new), importer le dépôt `jobolia/shifumi`.
+2. *Framework Preset* : **Other**, aucune commande de build, puis **Deploy**.
+3. Chaque push sur `main` redéploie automatiquement le jeu.
+
+## Autre option : GitHub Pages
 
 1. Dans le dépôt : **Settings → Pages**.
 2. *Source* : **Deploy from a branch**, branche `main`, dossier `/ (root)`.

@@ -7,6 +7,7 @@ const MOVES = {
   scissors: { emoji: '✌️', beats: 'paper', label: 'Ciseaux' },
 };
 const PEER_PREFIX = 'shifumi-amis-';
+const WINS_NEEDED = 2; // match en 2 manches gagnantes
 
 const $ = (id) => document.getElementById(id);
 
@@ -14,7 +15,9 @@ const state = {
   mode: null,        // 'online' | 'local' | 'cpu'
   names: ['Toi', 'Adversaire'],
   scores: [0, 0],
-  round: 0,
+  round: 0,          // numéro de manche global (sert à synchroniser le réseau)
+  matchRound: 1,     // numéro de manche dans le match en cours
+  matchOver: false,
   myMove: null,
   oppMoves: {},      // coups adverses reçus, indexés par numéro de manche
   localTurn: 0,      // mode local : 0 = joueur 1, 1 = joueur 2
@@ -75,6 +78,8 @@ function startGame(mode, names) {
   state.names = names;
   state.scores = [0, 0];
   state.round = 0;
+  state.matchRound = 1;
+  state.matchOver = false;
   state.oppMoves = {};
   updateScoreboard();
   show('game');
@@ -90,6 +95,7 @@ function startRound() {
   $('choices').classList.remove('hidden');
   setChoicesEnabled(true);
 
+  $('match-info').textContent = `Manche ${state.matchRound} — premier à ${WINS_NEEDED} manches gagnantes`;
   if (state.mode === 'local') {
     setStatus(`${state.names[0]}, choisis (${state.names[1]} ne regarde pas !)`);
   } else {
@@ -162,12 +168,32 @@ function tryReveal() {
     result.classList.add('lose');
   }
   setStatus(`${MOVES[state.myMove].label} contre ${MOVES[opp].label}`);
+
+  state.matchOver = w !== 0 && state.scores[w - 1] >= WINS_NEEDED;
+  if (state.matchOver) {
+    if (state.mode === 'local') {
+      result.textContent = `🏆 ${state.names[w - 1]} remporte le match !`;
+    } else {
+      result.textContent = w === 1 ? '🏆 Tu remportes le match !' : `${state.names[1]} remporte le match…`;
+    }
+    $('btn-next').textContent = '🔁 Revanche';
+  } else {
+    $('btn-next').textContent = 'Manche suivante';
+  }
   $('reveal').classList.remove('hidden');
 }
 
 function nextRound() {
   delete state.oppMoves[state.round];
   state.round++;
+  if (state.matchOver) {
+    state.scores = [0, 0];
+    state.matchRound = 1;
+    state.matchOver = false;
+    updateScoreboard();
+  } else {
+    state.matchRound++;
+  }
   startRound();
 }
 

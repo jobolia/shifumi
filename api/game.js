@@ -1,4 +1,4 @@
-// API d'une partie de shifumi en ligne, enregistrée dans Redis (Upstash, via le Marketplace Vercel).
+// API d'une partie de shifumi en ligne, enregistrée dans Redis (base créée depuis l'onglet Storage de Vercel).
 //
 // Une partie = un hash Redis `shifumi:<ID>` dont chaque champ n'est écrit qu'une fois (HSETNX),
 // ce qui évite tout conflit quand les deux joueurs jouent en même temps :
@@ -16,13 +16,17 @@ const ID_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
 // ---------- Stockage ----------
 
-const REDIS_URL = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
-const REDIS_TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+// Deux façons de joindre Redis, selon la base reliée au projet :
+//   REDIS_URL                          connexion Redis classique (redis://…)
+//   KV_REST_API_URL / KV_REST_API_TOKEN API HTTP d'Upstash
+const REDIS_URL = process.env.REDIS_URL;
+const REST_URL = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+const REST_TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
 
 async function redis(...command) {
-  const res = await fetch(REDIS_URL, {
+  const res = await fetch(REST_URL, {
     method: 'POST',
-    headers: { Authorization: `Bearer ${REDIS_TOKEN}` },
+    headers: { Authorization: `Bearer ${REST_TOKEN}` },
     body: JSON.stringify(command),
   });
   const data = await res.json();
@@ -57,8 +61,36 @@ const redisStore = {
   },
 };
 
+// La connexion est gardée entre deux appels tant que la fonction reste « chaude ».
+let clientPromise = null;
+function redisClient() {
+  if (!clientPromise) {
+    clientPromise = import('redis').then(async ({ createClient }) => {
+      const client = createClient({ url: REDIS_URL });
+      client.on('error', (err) => console.error('Redis', err));
+      await client.connect();
+      return client;
+    }).catch((err) => { clientPromise = null; throw err; });
+  }
+  return clientPromise;
+}
+
+const tcpStore = {
+  async getAll(key) {
+    return { ...(await (await redisClient()).hGetAll(key)) };
+  },
+  async setOnce(key, field, value) {
+    const client = await redisClient();
+    const res = await client.hSetNX(key, field, value);
+    const ok = res === true || res === 1;
+    if (ok) await client.expire(key, TTL_SECONDS);
+    return ok;
+  },
+};
+
 function getStore() {
-  if (REDIS_URL && REDIS_TOKEN) return redisStore;
+  if (REDIS_URL) return tcpStore;
+  if (REST_URL && REST_TOKEN) return redisStore;
   if (!process.env.VERCEL) return memoryStore;
   return null;
 }

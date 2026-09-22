@@ -24,9 +24,9 @@ Chaque match se joue en **2 manches gagnantes** : le premier à 2 victoires gagn
 
 1. Sur [vercel.com/new](https://vercel.com/new), importer le dépôt `jobolia/shifumi`
    (*Framework Preset* : **Other**, aucune commande de build).
-2. Dans le projet Vercel : **Storage → Create Database → Upstash for Redis** (offre gratuite),
-   puis **Connect** au projet `shifumi`. Cela ajoute les variables `KV_REST_API_URL` et
-   `KV_REST_API_TOKEN`.
+2. Dans le projet Vercel : **Storage → Create Database → Redis** (offre gratuite),
+   puis **Connect** au projet `shifumi`. Cela ajoute la variable `REDIS_URL`
+   (les variables `KV_REST_API_URL` / `KV_REST_API_TOKEN` d'Upstash marchent aussi).
 3. **Deployments → ⋯ → Redeploy** pour que le jeu utilise la base.
 4. Ensuite, chaque push sur `main` redéploie automatiquement le jeu.
 

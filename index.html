@@ -22,23 +22,27 @@
       <button id="btn-online" class="primary">🌐 Créer une partie en ligne</button>
       <button id="btn-local">📱 À deux sur ce téléphone</button>
       <button id="btn-cpu">🤖 Contre l'ordinateur</button>
-      <p class="hint">Matchs en 2 manches gagnantes. Pour jouer à distance : crée une partie et envoie le lien à ton ami.</p>
+      <p class="hint">Matchs en 2 manches gagnantes. Pour jouer à distance : crée une partie et envoie le lien à ton ami. La partie est enregistrée : chacun joue quand il veut.</p>
+      <div id="my-games" class="my-games hidden">
+        <p class="section-title">Tes parties en ligne</p>
+        <ul id="my-games-list"></ul>
+      </div>
     </section>
 
-    <!-- Attente d'un adversaire -->
+    <!-- Chargement / erreur -->
     <section id="screen-wait" class="screen hidden">
-      <p id="wait-text">Création de la partie…</p>
-      <div id="share" class="hidden">
-        <p>Envoie ce lien à ton ami :</p>
-        <input id="share-link" readonly>
-        <button id="btn-copy" class="primary">📋 Copier / partager le lien</button>
-        <p class="code">Code : <strong id="room-code"></strong></p>
-      </div>
-      <button class="btn-quit">Annuler</button>
+      <p id="wait-text" class="status">Chargement…</p>
+      <button class="btn-quit">Retour à l'accueil</button>
     </section>
 
     <!-- Jeu -->
     <section id="screen-game" class="screen hidden">
+      <div id="share" class="share hidden">
+        <p>Envoie ce lien à ton ami pour qu'il rejoigne la partie :</p>
+        <input id="share-link" readonly>
+        <button id="btn-copy" class="primary">📋 Copier / partager le lien</button>
+        <p class="code">Tu peux déjà jouer ta première manche en l'attendant.</p>
+      </div>
       <div class="scoreboard">
         <div><span id="p1-name">Toi</span><strong id="p1-score">0</strong></div>
         <div class="vs">vs</div>
@@ -57,11 +61,11 @@
         <button id="btn-next" class="primary">Manche suivante</button>
       </div>
       <button id="btn-handover" class="primary hidden">C'est bon, je suis prêt·e</button>
+      <p id="matches-info" class="code"></p>
       <button class="btn-quit">Quitter</button>
     </section>
   </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <script src="game.js"></script>
 </body>
 </html>

@@ -4,7 +4,9 @@ Un petit jeu de pierre-feuille-ciseaux à jouer entre amis, **sans compte, sans 
 
 ## Modes de jeu
 
-- 🌐 **En ligne** : crée une partie, envoie le lien à un ami, jouez chacun sur votre téléphone.
+- 🌐 **En ligne** : crée une partie, envoie le lien à un ami. La partie est **enregistrée** :
+  chacun joue sa manche quand il veut, peut fermer la page et revenir plus tard (les parties
+  en cours apparaissent sur l'accueil).
 - 📱 **À deux sur le même téléphone** : chacun choisit à son tour, sans regarder.
 - 🤖 **Contre l'ordinateur**.
 
@@ -12,34 +14,33 @@ Chaque match se joue en **2 manches gagnantes** : le premier à 2 victoires gagn
 
 ## Comment ça marche
 
-C'est un site statique (HTML, CSS, JavaScript, rien à compiler). Le mode en ligne utilise
-[PeerJS](https://peerjs.com/) (WebRTC) : les deux navigateurs communiquent directement, le serveur
-public de PeerJS sert juste à les mettre en relation. Aucune donnée n'est stockée, à part ton pseudo
-dans ton navigateur.
+- Le site (`index.html`, `style.css`, `game.js`) est statique.
+- `api/game.js` est une fonction Vercel qui enregistre les parties dans une base **Redis (Upstash)**,
+  gardées 30 jours après la dernière action.
+- Pas de compte : chaque joueur reçoit un jeton secret gardé dans son navigateur. Le coup de
+  l'adversaire n'est jamais envoyé avant que les deux aient joué.
 
 ## Mettre le jeu en ligne (Vercel)
 
-1. Sur [vercel.com/new](https://vercel.com/new), importer le dépôt `jobolia/shifumi`.
-2. *Framework Preset* : **Other**, aucune commande de build, puis **Deploy**.
-3. Chaque push sur `main` redéploie automatiquement le jeu.
-
-## Autre option : GitHub Pages
-
-1. Dans le dépôt : **Settings → Pages**.
-2. *Source* : **Deploy from a branch**, branche `main`, dossier `/ (root)`.
-3. Après une minute, le jeu est disponible sur `https://jobolia.github.io/shifumi/`.
+1. Sur [vercel.com/new](https://vercel.com/new), importer le dépôt `jobolia/shifumi`
+   (*Framework Preset* : **Other**, aucune commande de build).
+2. Dans le projet Vercel : **Storage → Create Database → Upstash for Redis** (offre gratuite),
+   puis **Connect** au projet `shifumi`. Cela ajoute les variables `KV_REST_API_URL` et
+   `KV_REST_API_TOKEN`.
+3. **Deployments → ⋯ → Redeploy** pour que le jeu utilise la base.
+4. Ensuite, chaque push sur `main` redéploie automatiquement le jeu.
 
 ## Jouer en local
 
-```bash
-python3 -m http.server 8000
-# puis ouvrir http://localhost:8000
-```
+Les modes « même téléphone » et « ordinateur » marchent en ouvrant simplement `index.html`.
+Pour le mode en ligne, lancer `vercel dev` (sans base Redis configurée, les parties sont gardées en
+mémoire, ce qui suffit pour tester).
 
 ## Fichiers
 
-| Fichier      | Rôle                                    |
-|--------------|-----------------------------------------|
-| `index.html` | Les écrans du jeu                       |
-| `style.css`  | Le style (mode clair et sombre)         |
-| `game.js`    | Les règles, les modes de jeu, le réseau |
+| Fichier       | Rôle                                           |
+|---------------|------------------------------------------------|
+| `index.html`  | Les écrans du jeu                              |
+| `style.css`   | Le style (mode clair et sombre)                |
+| `game.js`     | Les règles et les trois modes de jeu           |
+| `api/game.js` | Le serveur des parties en ligne (Vercel)       |

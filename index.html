@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shifumi entre amis</title>
+  <meta name="description" content="Pierre, feuille, ciseaux entre amis, sans compte : partage un lien et joue.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✊</text></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <header>
+      <h1>✊ ✋ ✌️</h1>
+      <p class="subtitle">Shifumi entre amis — sans compte</p>
+    </header>
+
+    <!-- Accueil -->
+    <section id="screen-home" class="screen">
+      <label for="name">Ton pseudo</label>
+      <input id="name" maxlength="16" placeholder="Ex : Léa" autocomplete="off">
+      <button id="btn-online" class="primary">🌐 Créer une partie en ligne</button>
+      <button id="btn-local">📱 À deux sur ce téléphone</button>
+      <button id="btn-cpu">🤖 Contre l'ordinateur</button>
+      <p class="hint">Pour jouer en ligne : crée une partie et envoie le lien à ton ami.</p>
+    </section>
+
+    <!-- Attente d'un adversaire -->
+    <section id="screen-wait" class="screen hidden">
+      <p id="wait-text">Création de la partie…</p>
+      <div id="share" class="hidden">
+        <p>Envoie ce lien à ton ami :</p>
+        <input id="share-link" readonly>
+        <button id="btn-copy" class="primary">📋 Copier / partager le lien</button>
+        <p class="code">Code : <strong id="room-code"></strong></p>
+      </div>
+      <button class="btn-quit">Annuler</button>
+    </section>
+
+    <!-- Jeu -->
+    <section id="screen-game" class="screen hidden">
+      <div class="scoreboard">
+        <div><span id="p1-name">Toi</span><strong id="p1-score">0</strong></div>
+        <div class="vs">vs</div>
+        <div><span id="p2-name">Adversaire</span><strong id="p2-score">0</strong></div>
+      </div>
+      <p id="status" class="status"></p>
+      <div id="choices" class="choices">
+        <button data-move="rock" aria-label="Pierre">✊<small>Pierre</small></button>
+        <button data-move="paper" aria-label="Feuille">✋<small>Feuille</small></button>
+        <button data-move="scissors" aria-label="Ciseaux">✌️<small>Ciseaux</small></button>
+      </div>
+      <div id="reveal" class="reveal hidden">
+        <div class="hands"><span id="hand-1"></span><span id="hand-2"></span></div>
+        <p id="result" class="result"></p>
+        <button id="btn-next" class="primary">Manche suivante</button>
+      </div>
+      <button id="btn-handover" class="primary hidden">C'est bon, je suis prêt·e</button>
+      <button class="btn-quit">Quitter</button>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
